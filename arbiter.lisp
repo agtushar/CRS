@@ -1,0 +1,11 @@
+(entity arbiter
+	((exp-data in nx144)
+	 (exp-data-av in n)
+	 (exp-data-rd out n)
+	 (buf-data in nx144)
+	 (buf-data-av in n)
+	 (buf-data-rd out n)
+	 (outport-data out 144)
+	 (outport-data-av out)
+	 (outport-data-rd in 1))
+	(architecture () ())) 

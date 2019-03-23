@@ -1,0 +1,2 @@
+vhdl work "globals.vhd"
+vhdl work "ARBITER.vhd"

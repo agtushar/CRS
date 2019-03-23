@@ -1,0 +1,45 @@
+SIC210
+
+- testbench covering all possible cases: CORNER CASES in particular
+
+- components - VOQ, arbiter, testbench (multiple verifications!!)
+
+- what is the value of n? vhdl provides a facility for generic data type
+  vhdl also provides a facility for 2d dimensional data types
+- confirm number of clock cycles required for output?
+or why doesn't it matter?
+
+- put high on outport-data-av when the data is available on the output port
+- ?? read data from outport-data-rd
+- what is 'exp' the abbreviation of? express
+- outport, exp-data, buf-data, output,
+- exp-data: input
+- difference between exp-data and buf-data: high priority to exp-data,
+  while contending for output port
+- send data to output-data
+- what do we do on rst? set all output ports to 0.
+
+- what is the significance of output_port_valid?
+  consider the output_port only if output_port_valid [is high]
+
+- when exp_data_av (for a particular output port) [is high]
+    allocate all resources to exp_data (of that output port)
+
+- as soon as data arrives at any of the input ports,
+    move it into the VOQs
+
+- at the VOQ, run the arbiter, giving higher priority to exp-data
+- confirm: arbiter would have 2n input ports
+  -- internal design does not matter?
+
+- ???? reading packets: data_valid bit every 8 bits; spread across time,
+  or space
+- ?? VOQ: reading output_ports: 0-indexed, 1-indexed?
+- ?? VOQ/arbiter: number of packets to buffer, and drop
+
+
+
+- ?? significance of exp-data and net neutrality
+
+
+
