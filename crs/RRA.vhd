@@ -13,7 +13,7 @@ entity RRA is
 end RRA;
 
 architecture ARCH_RRA of RRA is
-	
+	signal curr_pos : integer := 0;
 begin
 --	grant <= "0001" when (grant(0) = '1' and ack = '0')
 --								or (ack = '1' and req(0)='1'
@@ -27,7 +27,7 @@ begin
 --									 or (grant(3) = '1')) else
 	
 	process(clk,rst) is
-		variable curr_pos, next_pos : integer := 0;
+		variable next_pos : integer := 0;
 		variable req_found : std_logic := '0';
 		--variable grant_temp : std_logic_vector := "0000";
 	begin
@@ -42,7 +42,7 @@ begin
 					end if;
 				end loop;
 				grant(next_pos) <= '1';
-				curr_pos := next_pos;
+				curr_pos <= next_pos;
 			else
 				if (ack = '1') then
 					req_found := '0';
@@ -65,7 +65,7 @@ begin
 					
 					grant(curr_pos) <= '0';
 					grant(next_pos) <= '1';
-					curr_pos := next_pos;
+					curr_pos <= next_pos;
 				end if;
 			end if;
 		end if;

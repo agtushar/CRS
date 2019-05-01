@@ -218,7 +218,6 @@ begin
       p_buf_grant <= buf_grant;
 		p_exp_gint <= exp_gint;
 		p_buf_gint <= buf_gint;
-		report integer'image(p_buf_gint);
     end if;
   end process;
 end ARCH_ARBITER;

@@ -53,9 +53,9 @@ ARCHITECTURE behavior OF tb_crs IS
 			BUF_DATA: IN data_bus_vector(n-1 downto 0);
 			OUTPUT_PORT: IN output_port_VECTOR(N-1 downto 0);
 			OUTPUT_PORT_VALID: IN STD_LOGIC_VECTOR(N-1 downto 0);
-			OUTPORT_DATA_AV: OUT STD_LOGIC_VECTOR(N-1 downto 0);
+			OUTPORT_DATA_AV: inOUT STD_LOGIC_VECTOR(N-1 downto 0);
 			OUTPORT_DATA_RD: IN STD_LOGIC_VECTOR(N-1 downto 0);
-			OUTPORT_DATA: OUT data_bus_vector(n-1 downto 0)
+			OUTPORT_DATA: inOUT data_bus_vector(n-1 downto 0)
         );
     END COMPONENT;
     
@@ -65,8 +65,8 @@ ARCHITECTURE behavior OF tb_crs IS
 
    signal EXP_DATA_RD, buf_data_rd, outport_data_rd : std_logic_vector(N-1 downto 0);
 	
-	signal output_port_valid : std_logic_vector(n-1 downto 0);
-	signal output_port : output_port_vector(n-1 downto 0);
+	signal output_port_valid : std_logic_vector(n-1 downto 0) := (others => '0');
+	signal output_port : output_port_vector(n-1 downto 0) := (others => (others => '0'));
 	
 	signal clk, rst : std_logic := '0';
    constant clk_period : time := 10 ns;
@@ -102,13 +102,18 @@ BEGIN
    -- Stimulus process
    stim_proc: process
    begin		
-      -- hold reset state for 100 ns.
-      wait for 100 ns;	
-
-      wait for clk_period*10;
-
-      -- insert stimulus here 
-
+		rst <= '1'; -- note rst for fifo is '0': see ARBITER.vhd;
+		wait for 2.5*clk_period; -- wait for fifo initialization
+		rst <= '0';			
+		buf_data(0) <= "100110111000";
+		buf_data_av(0) <= '1';
+		output_port(0) <= "00000001";
+		output_port_valid <= "01";
+		wait for clk_period;
+		buf_data(0) <= "100110110000";
+		wait for clk_period;
+		buf_data_av <= (others => '0');
+		output_port_valid <= (others => '0');
       wait;
    end process;
 

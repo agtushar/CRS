@@ -131,25 +131,37 @@ BEGIN
 --			wait for clk_period;
 --			av <= "0000";
 
--- normal test
+-- crs test
+		rst <= '0';			
 		buf_data(0) <= "100110111000";
-		buf_data(1) <= "100010001011";
 		buf_data_av(0) <= '1';
-		buf_data_av(1) <= '1';
+--		output_port(0) <= "00000001";
+--		output_port_valid <= "01";
 		wait for clk_period;
-		exp_data(0) <= "100110001000";
-		exp_data_av(0) <= '1';
 		buf_data(0) <= "100110110000";
-		buf_data(1) <= "100010000011";
 		wait for clk_period;
 		buf_data_av <= (others => '0');
-		exp_data(0) <= "100010001000";
-		exp_data_av(0) <= '1';
-		wait for clk_period;
-		exp_data(0) <= "100010000000";
-		exp_data_av(0) <= '1';
-		wait for clk_period;
-		exp_data_av(0) <= '0';
+--		output_port_valid <= (others => '0');
+
+---- normal test
+--		buf_data(0) <= "100110111000";
+--		buf_data(1) <= "100010001011";
+--		buf_data_av(0) <= '1';
+--		buf_data_av(1) <= '1';
+--		wait for clk_period;
+--		exp_data(0) <= "100110001000";
+--		exp_data_av(0) <= '1';
+--		buf_data(0) <= "100110110000";
+--		buf_data(1) <= "100010000011";
+--		wait for clk_period;
+--		buf_data_av <= (others => '0');
+--		exp_data(0) <= "100010001000";
+--		exp_data_av(0) <= '1';
+--		wait for clk_period;
+--		exp_data(0) <= "100010000000";
+--		exp_data_av(0) <= '1';
+--		wait for clk_period;
+--		exp_data_av(0) <= '0';
       wait;
    end process;
 
