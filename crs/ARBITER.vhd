@@ -139,22 +139,11 @@ begin
       grant => buf_grant
       );
 
---  integers:
---  for i in 0 to n-1 generate
---    grant_integer_exp: if exp_grant(i) = '1' generate
---      exp_gint <= i;
---    end generate;
---    grant_integer_buf: if buf_grant(i) = '1' generate
---      buf_gint <= i;
---    end generate;
---  end generate;
-
 	exp_gint <= vector_to_integer(exp_grant);
 	buf_gint <= vector_to_integer(buf_grant);
       
   exp_granted <= '1' when not (exp_req = zeros) else '0';
   grant <= exp_grant when exp_granted = '1' else buf_grant;
---  request <= exp_req when exp_granted = '1' else buf_req;
   
   grant_ext <= grant;
 
@@ -180,26 +169,11 @@ begin
     end if;
   end process;
 
---  process(clk, rst) is
---  begin
---	if rst = '1' then
---		ack <= '0';
---	elsif rising_edge(clk) then
---	  ack <= is_end_of_packet(out_data) and out_data_av;
---	end if;
---  end process;
+
   -- ACK should be high, only when the current packet contains a '0' dv-bit.
   -- Then, why the below complications?
 	  ack <= is_end_of_packet(out_data) and out_data_av;
- 
-  
-  -- ack <= '0' when (p_req = "0000" or not (grant_integer = prev_grant) or p_ack = '1')
-         -- else
-         -- op_valid and not (dout(grant_integer)(0));
-
-  
---  rd_sig <= exp_rd when exp_granted = '1' else buf_rd;
-
+   
   -- 1. Stop reading when the ack is high, since rra's take one cycle to change
   -- the grant.
   -- 2. Though, why act on the basis of the p_req instead of the req
@@ -212,8 +186,6 @@ begin
                            and not(exp_granted) = '1' else
             zeros;
   
-  -- rd_en <= grant when ack = '0' and not (p_req = "0000") else
-           -- zeros;
   out_data <= exp_dout(p_exp_gint) when exp_granted = '1' else
               buf_dout(p_buf_gint);
 
