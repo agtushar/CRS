@@ -22,7 +22,7 @@ end CRS;
 architecture ARCH_CRS of CRS is
   component VOQ is
     port(
-      clk : in std_logic;
+		clk : in std_logic;
       data_av_in : in std_logic;
       data_rd_in : out std_logic;
       data_in : in data_bus;
@@ -55,164 +55,86 @@ architecture ARCH_CRS of CRS is
 
   type slv_vector is array(n-1 downto 0) of std_logic_vector(n-1 downto 0);
   signal exp_data_av_out, exp_data_rd_out, buf_data_av_out, 
-    buf_data_rd_out : slv_vector;
+	buf_data_rd_out : slv_vector;
+	
+	signal buf_data_rd_in_X, exp_data_rd_in_X : std_logic_Vector(n-1 downto 0);
   
   type dbvec_vector is array(n-1 downto 0) of data_bus_vector(n-1 downto 0);
   signal exp_data_out, buf_data_out : dbvec_vector;
-
-  signal buf_data_out_0, buf_data_out_1 : data_bus_vector(n-1 downto 0);
-  signal buf_data_in_0, buf_data_in_1 : data_bus_vector(n-1 downto 0);
-
-  signal buf_data_av_out_0, buf_data_av_out_1 : std_logic_vector(n-1 downto 0);
-  signal buf_data_av_in_0, buf_data_av_in_1 : std_logic_vector(n-1 downto 0);
-
-  signal buf_data_rd_out_0, buf_data_rd_out_1 : std_logic_vector(n-1 downto 0);
-  signal buf_data_rd_in_0, buf_data_rd_in_1 : std_logic_vector(n-1 downto 0);
-
-  signal exp_data_out_0, exp_data_out_1 : data_bus_vector(n-1 downto 0);
-  signal exp_data_in_0, exp_data_in_1 : data_bus_vector(n-1 downto 0);
-
-  signal exp_data_av_out_0, exp_data_av_out_1 : std_logic_vector(n-1 downto 0);
-  signal exp_data_av_in_0, exp_data_av_in_1 : std_logic_vector(n-1 downto 0);
-
-  signal exp_data_rd_out_0, exp_data_rd_out_1 : std_logic_vector(n-1 downto 0);
-  signal exp_data_rd_in_0, exp_data_rd_in_1 : std_logic_vector(n-1 downto 0);
+  
+  function get_data_col (mat: dbvec_vector; col_no: integer) 
+	return data_bus_vector is
+	variable rv : data_bus_vector(n-1 downto 0)  -- Return Value
+		:= (others => (others => '0'));
+  begin
+	for i in 0 to n-1 loop
+		rv(i) := mat(i)(col_no);
+	end loop;
+	return rv;
+  end get_data_col;
+  
+  function get_sl_col (mat: slv_vector; col_no: integer) 
+	return std_logic_vector is
+	variable rv : std_logic_vector(n-1 downto 0)  -- Return Value
+		:= (others => '0');
+  begin
+	for i in 0 to n-1 loop
+		rv(i) := mat(i)(col_no);
+	end loop;
+	return rv;
+  end get_sl_col;
   
 begin
-
-  buf_voq_0: voq port map(
-    clk => clk,
-    data_av_in => buf_data_av(0),
-    data_rd_in => buf_data_rd(0),
-    data_in => buf_data(0),
-    output_port_valid => output_port_valid(0),
-    output_port => output_port(0),
-    data_out => buf_data_out_0,
-    data_av_out => buf_data_av_out_0,
-    data_rd_out => buf_data_rd_out_0(n-1 downto 0)
-    );
-  buf_voq_1: voq port map(
-    clk => clk,
-    data_av_in => buf_data_av(1),
-    data_rd_in => buf_data_rd(1),
-    data_in => buf_data(1),
-    output_port_valid => output_port_valid(1),
-    output_port => output_port(1),
-    data_out => buf_data_out_1,
-    data_av_out => buf_data_av_out_1,
-    data_rd_out => buf_data_rd_out_1
-    );
-
-  exp_voq_0: voq port map(
-    clk => clk,
-    data_av_in => exp_data_av(0),
-    data_rd_in => exp_data_rd(0),
-    data_in => exp_data(0),
-    output_port_valid => output_port_valid(0),
-    output_port => output_port(0),
-    data_out => exp_data_out_0,
-    data_av_out => exp_data_av_out_0,
-    data_rd_out => exp_data_rd_out_0
-    );
-  exp_voq_1: voq port map(
-    clk => clk,
-    data_av_in => exp_data_av(1),
-    data_rd_in => exp_data_rd(1),
-    data_in => exp_data(1),
-    output_port_valid => output_port_valid(1),
-    output_port => output_port(1),
-    data_out => exp_data_out_1,
-    data_av_out => exp_data_av_out_1,
-    data_rd_out => exp_data_rd_out_1
-    );
-
-  buf_data_in_0 <= buf_data_out_0(0) & buf_data_out_1(0);
-  buf_data_in_1 <= buf_data_out_0(1) & buf_data_out_1(1);
-
-  buf_data_av_in_0 <= buf_data_av_out_0(0) & buf_data_av_out_1(0);
-  buf_data_av_in_1 <= buf_data_av_out_0(1) & buf_data_av_out_1(1);
-
-  exp_data_in_0 <= exp_data_out_0(0) & exp_data_out_1(0);
-  exp_data_in_1 <= exp_data_out_0(1) & exp_data_out_1(1);
-
-  exp_data_av_in_0 <= exp_data_av_out_0(0) & exp_data_av_out_1(0);
-  exp_data_av_in_1 <= exp_data_av_out_0(1) & exp_data_av_out_1(1);
-  
-  arbiter_0: arbiter port map(
-    clk => clk,
-    rst => rst,
-    buf_data => buf_data_in_0,
-    buf_data_av => buf_data_av_in_0,
-    buf_data_rd => buf_data_rd_in_0,
-    exp_data => exp_data_in_0,
-    exp_data_av => exp_data_av_in_0,
-    exp_data_rd => exp_data_rd_in_0,
-    OUT_DATA_AV => outport_data_av(0),
-    OUT_DATA_RD => outport_data_rd(0),
-    OUT_DATA => outport_data(0)
-    );
-
-  arbiter_1: arbiter port map(
-    clk => clk,
-    rst => rst,
-    buf_data => buf_data_in_1,
-    buf_data_av => buf_data_av_in_1,
-    buf_data_rd => buf_data_rd_in_1,
-    exp_data => exp_data_in_1,
-    exp_data_av => exp_data_av_in_1,
-    exp_data_rd => exp_data_rd_in_1,
-    OUT_DATA_AV => outport_data_av(1),
-    OUT_DATA_RD => outport_data_rd(1),
-    OUT_DATA => outport_data(1)
-    );
-  
-  -- components: 
-  -- for i in 0 to n-1 generate
-  --   exp_voq: voq port map(
-  --     clk => clk,
-  --     data_av_in => exp_data_av(i),
-  --     data_rd_in => exp_data_rd(i),
-  --     data_in => exp_data(i),
-  --     output_port_valid => output_port_valid(i),
-  --     output_port => output_port(i),
-  --     data_out => exp_data_out(i)(n-1 downto 0),
-  --     data_av_out => exp_data_av_out(i)(n-1 downto 0),
-  --     data_rd_out => exp_data_rd_out(i)(n-1 downto 0)
-  --     );
-  --   buf_voq : voq port map(
-  --     clk => clk,
-  --     data_av_in => buf_data_av(i),
-  --     data_rd_in => buf_data_rd(i),
-  --     data_in => buf_data(i),
-  --     output_port_valid => output_port_valid(i),
-  --     output_port => output_port(i),
-  --     data_out => buf_data_out(i)(n-1 downto 0),
-  --     data_av_out => buf_data_av_out(i)(n-1 downto 0),
-  --     data_rd_out => buf_data_rd_out(i)(n-1 downto 0)
-  --     );
-  -- end generate;
-  
-  -- arbiters : 
-  -- for i in 0 to n-1 generate
-  --   arbiter_X: arbiter port map(
-  --     clk => clk,
-  --     rst => rst,
-  --     buf_data => buf_data_out(n-1 downto 0)(i),
-  --     buf_data_av => buf_data_av_out(n-1 downto 0)(i),
-  --     buf_data_rd => buf_data_rd_out(n-1 downto 0)(i),
-  --     exp_data => exp_data_out(n-1 downto 0)(i),
-  --     exp_data_av => exp_data_av_out(n-1 downto 0)(i),
-  --     exp_data_rd => exp_data_rd_out(n-1 downto 0)(i),
-  --     OUT_DATA_AV => outport_data_av(i),
-  --     OUT_DATA_RD => outport_data_rd(i),
-  --     OUT_DATA => outport_data(i)
-  --    -- GRANT_EXT: out STD_LOGIC_VECTOR(n-1 downto 0);
-  --    -- buf_req_ext, exp_req_ext: inout std_logic_vector(n-1 downto 0);
-  --    -- buf_rd_ext, exp_rd_ext : inout std_logic_vector(n-1 downto 0);
-  --    -- exp_granted : inout std_logic;
-  --    -- ack_ext : out std_logic
-  --     );
---  end generate;
+  components: 
+    for i in 0 to n-1 generate
+      exp_voq: voq port map(
+			clk => clk,
+        data_av_in => exp_data_av(i),
+        data_rd_in => exp_data_rd(i),
+        data_in => exp_data(i),
+        output_port_valid => output_port_valid(i),
+        output_port => output_port(i),
+        data_out => exp_data_out(i)(n-1 downto 0),
+        data_av_out => exp_data_av_out(i)(n-1 downto 0),
+        data_rd_out => exp_data_rd_out(i)(n-1 downto 0)
+        );
+      buf_voq : voq port map(
+			clk => clk,
+        data_av_in => buf_data_av(i),
+        data_rd_in => buf_data_rd(i),
+        data_in => buf_data(i),
+        output_port_valid => output_port_valid(i),
+        output_port => output_port(i),
+        data_out => buf_data_out(i)(n-1 downto 0),
+        data_av_out => buf_data_av_out(i)(n-1 downto 0),
+        data_rd_out => buf_data_rd_out(i)(n-1 downto 0)
+        );
+		end generate;
+	
+      arbiters : 
+		for i in 0 to n-1 generate
+			exp_data_rd_in_X <= get_sl_col(exp_data_rd_out, i);
+			buf_data_rd_in_X <= get_sl_col(buf_data_rd_out, i);
+			arbiter_X: arbiter port map(
+        clk => clk,
+        rst => rst,
+--        buf_data => buf_data_out(n-1 downto 0)(i),
+		  buf_data => get_data_col(buf_data_out, i),
+        buf_data_av => get_sl_col(buf_data_av_out, i),
+        buf_data_rd => exp_data_rd_in_X,
+        exp_data => get_data_col(exp_data_out, i),
+        exp_data_av => get_sl_col(exp_data_av_out, i),
+        exp_data_rd => exp_data_rd_in_X,
+        OUT_DATA_AV => outport_data_av(i),
+        OUT_DATA_RD => outport_data_rd(i),
+        OUT_DATA => outport_data(i)
+        -- GRANT_EXT: out STD_LOGIC_VECTOR(n-1 downto 0);
+        -- buf_req_ext, exp_req_ext: inout std_logic_vector(n-1 downto 0);
+        -- buf_rd_ext, exp_rd_ext : inout std_logic_vector(n-1 downto 0);
+        -- exp_granted : inout std_logic;
+        -- ack_ext : out std_logic
+        );
+    end generate;
 
 
 
