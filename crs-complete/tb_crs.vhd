@@ -68,7 +68,7 @@ ARCHITECTURE behavior OF tb_crs IS
 	signal output_port_valid : std_logic_vector(n-1 downto 0) := (others => '0');
 	signal output_port : output_port_vector(n-1 downto 0) := (others => (others => '0'));
 	
-	signal clk, rst : std_logic := '0';
+	signal clk, rst : std_logic := '0';				
    constant clk_period : time := 10 ns;
  
 BEGIN
@@ -85,6 +85,7 @@ BEGIN
           buf_DATA => buf_DATA,
 			 output_port => output_port,
 			 output_port_valid => output_port_valid,
+			 outport_data_av => outport_data_av,
 			 outport_data_rd => outport_data_rd,
 			 outport_data => outport_data
         );
@@ -108,7 +109,7 @@ BEGIN
 		buf_data(0) <= "100110111000";
 		buf_data_av(0) <= '1';
 		output_port(0) <= "00000001";
-		output_port_valid <= "01";
+		output_port_valid <= "11";
 		wait for clk_period;
 		buf_data(0) <= "100110110000";
 		wait for clk_period;

@@ -43,6 +43,7 @@ ARCHITECTURE behavior OF tb_voq IS
  
     COMPONENT VOQ
     PORT(
+			clk : in std_logic;
 			data_av_in : in std_logic;
 			data_rd_in : out std_logic;
 			data_in : in data_bus;
@@ -76,6 +77,7 @@ BEGIN
  
 	-- Instantiate the Unit Under Test (UUT)
    uut: VOQ PORT MAP (
+			clk => clk,
           data_av_in => data_av_in,
           data_rd_in => data_rd_in,
           data_in => data_in,

@@ -41,6 +41,9 @@ package globals is
 -- function <function_name>  (signal <signal_name> : in <type_declaration>) return <type_declaration>;
 -- procedure <procedure_name> (<type_declaration> <constant_name>	: in <type_declaration>);
 --
+        function vector_to_integer (vec : std_logic_vector(n-1 downto 0)) 
+	return integer;
+
 	
 
 
@@ -73,6 +76,19 @@ package body globals is
 --  begin
 --    
 --  end <procedure_name>;
+
+  function vector_to_integer (vec : std_logic_vector(n-1 downto 0)) 
+	return integer is
+	variable i : integer := 0;
+  begin
+	for i in 0 to n-1 loop
+		if vec(i) = '1' then
+			return i;
+		end if;
+	end loop;
+	return 0;
+  end vector_to_integer;
+  
  
 end globals;
  

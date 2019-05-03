@@ -60,7 +60,8 @@ begin
 				curr_grant_int := vector_to_integer(grant);
 				i := curr_grant_int + 1;
 				-- find the next request, in cyclic order
-				while not (i = curr_grant_int) loop
+				for unused in 0 to n-1 loop
+					if (i = curr_grant_int) then exit; end if;
 					if i > n-1 then i := 0; end if;
 					if req(i) = '1' then
 						next_grant_int := i;
