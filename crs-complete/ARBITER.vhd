@@ -59,6 +59,8 @@ architecture ARCH_ARBITER of ARBITER is
   
   constant zeros : std_logic_vector(n-1 downto 0) := (others => '0');
   
+  signal wr_en_exp, wr_en_buf : std_logic_vector(n-1 downto 0) := (others => '0');
+  
   function is_end_of_packet (db: data_bus) return std_logic is
 		variable i : integer := dv_bit_interval-1;
 	begin
@@ -91,11 +93,12 @@ begin
 	ack_ext <= ack;
   fifos:
   for i in 0 to n-1 generate
+		wr_en_exp(i) <= exp_data_av(i) when exp_pf(i) = '0' and exp_granted = '1' else '0';
     fifo_exp: fifo port map(
       rst => '0',
       clk => clk,
       din => exp_data(i),
-      wr_en => exp_data_av(i), -- writing is straight-forward
+      wr_en => wr_en_exp(i), -- writing is straight-forward
       rd_en => exp_rd(i), -- reading is not so;
       -- may be, it can be when rra has no delay
       dout => exp_dout(i), -- will be used for looping below
@@ -103,18 +106,22 @@ begin
       empty => exp_empty(i),
       prog_full => exp_pf(i)
       );
+		exp_data_rd(i) <= wr_en_exp(i);
+		
+		wr_en_buf(i) <= buf_data_av(i) when buf_pf(i) = '0' and exp_granted = '0' else '0';
     fifo_buf: fifo port map(
       rst => '0',
       clk => clk,
       din => buf_data(i),
-      wr_en => buf_data_av(i), -- writing is straight-forward
+      wr_en => wr_en_buf(i), -- writing is straight-forward
       rd_en => buf_rd(i), -- reading is not so;
       -- may be, it can be when rra has no delay
       dout => buf_dout(i), -- will be used for looping below
       full => buf_full(i), -- ignoring almost_full
       empty => buf_empty(i),
       prog_full => buf_pf(i)
-      );
+		);
+		buf_data_rd(i) <= wr_en_buf(i);
   end generate;
 
   -- ALL THE FOLLOWING CODE IS EXCLUSIVELY FOR READING !!

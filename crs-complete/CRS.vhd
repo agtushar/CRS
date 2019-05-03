@@ -96,7 +96,7 @@ begin
         output_port => output_port(i),
         data_out => exp_data_out(i)(n-1 downto 0),
         data_av_out => exp_data_av_out(i)(n-1 downto 0),
-        data_rd_out => exp_data_rd_out(i)(n-1 downto 0)
+        data_rd_out => get_sl_col(exp_data_rd_out, i)
         );
       buf_voq : voq port map(
 			clk => clk,
@@ -107,24 +107,24 @@ begin
         output_port => output_port(i),
         data_out => buf_data_out(i)(n-1 downto 0),
         data_av_out => buf_data_av_out(i)(n-1 downto 0),
-        data_rd_out => buf_data_rd_out(i)(n-1 downto 0)
+        data_rd_out => get_sl_col(buf_data_rd_out, i)
         );
 		end generate;
 	
       arbiters : 
 		for i in 0 to n-1 generate
-			exp_data_rd_in_X <= get_sl_col(exp_data_rd_out, i);
-			buf_data_rd_in_X <= get_sl_col(buf_data_rd_out, i);
+--			exp_data_rd_in_X <= get_sl_col(exp_data_rd_out, i);
+--			buf_data_rd_in_X <= get_sl_col(buf_data_rd_out, i);
 			arbiter_X: arbiter port map(
         clk => clk,
         rst => rst,
 --        buf_data => buf_data_out(n-1 downto 0)(i),
 		  buf_data => get_data_col(buf_data_out, i),
         buf_data_av => get_sl_col(buf_data_av_out, i),
-        buf_data_rd => exp_data_rd_in_X,
+        buf_data_rd => buf_data_rd_out(i),
         exp_data => get_data_col(exp_data_out, i),
         exp_data_av => get_sl_col(exp_data_av_out, i),
-        exp_data_rd => exp_data_rd_in_X,
+        exp_data_rd => exp_data_rd_out(i),
         OUT_DATA_AV => outport_data_av(i),
         OUT_DATA_RD => outport_data_rd(i),
         OUT_DATA => outport_data(i)

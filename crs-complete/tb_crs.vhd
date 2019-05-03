@@ -106,15 +106,29 @@ BEGIN
 		rst <= '1'; -- note rst for fifo is '0': see ARBITER.vhd;
 		wait for 2.5*clk_period; -- wait for fifo initialization
 		rst <= '0';			
-		buf_data(0) <= "100110111000";
-		buf_data_av(0) <= '1';
+      buf_data(0) <= "111110001000";
+		buf_data(1) <= "101010001011";
+		buf_data_av <= "11";
 		output_port(0) <= "00000001";
+		output_port(1) <= "00000001";
 		output_port_valid <= "11";
+		wait for 49 * clk_period;
+		buf_data(0) <= "111110000000";
+		buf_data(1) <= "101010000011";
 		wait for clk_period;
-		buf_data(0) <= "100110110000";
-		wait for clk_period;
-		buf_data_av <= (others => '0');
+		buf_data_av <= "00";
 		output_port_valid <= (others => '0');
+
+		
+--		buf_data(0) <= "100110111000";
+--		buf_data_av(0) <= '1';
+--		output_port(0) <= "00000001";
+--		output_port_valid <= "11";
+--		wait for clk_period;
+--		buf_data(0) <= "100110110000";
+--		wait for clk_period;
+--		buf_data_av <= (others => '0');
+--		output_port_valid <= (others => '0');
       wait;
    end process;
 

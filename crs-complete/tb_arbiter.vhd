@@ -122,26 +122,23 @@ BEGIN
 		rst <= '0';			
 		
 -- test for fifo almost full
---			data0 <= "1111";
---			data1 <= "1010";
---			dv <= "0011";
---			av <= "0011";
---			wait for 1050 * clk_period;
---			dv <= "0000";
---			wait for clk_period;
---			av <= "0000";
+			buf_data(0) <= "111110001000";
+			buf_data(1) <= "101010001011";
+			buf_data_av <= "11";
+			wait for 49 * clk_period;
+			buf_data(0) <= "111110000000";
+			buf_data(1) <= "101010000011";
+			wait for clk_period;
+			buf_data_av <= "00";
 
 -- crs test
-		rst <= '0';			
-		buf_data(0) <= "100110111000";
-		buf_data_av(0) <= '1';
---		output_port(0) <= "00000001";
---		output_port_valid <= "01";
-		wait for clk_period;
-		buf_data(0) <= "100110110000";
-		wait for clk_period;
-		buf_data_av <= (others => '0');
---		output_port_valid <= (others => '0');
+--		rst <= '0';			
+--		buf_data(0) <= "100110111000";
+--		buf_data_av(0) <= '1';
+--		wait for clk_period;
+--		buf_data(0) <= "100110110000";
+--		wait for clk_period;
+--		buf_data_av <= (others => '0');
 
 ---- normal test
 --		buf_data(0) <= "100110111000";

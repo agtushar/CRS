@@ -25,14 +25,15 @@ port(
 end VOQ;
 
 architecture Behavioral of VOQ is
---	signal output_port_int : integer := 0;
+	signal output_port_int : integer := 0;
 --	constant dbv_zeros : data_bus_vector := (others => (others => '0'));
 --	signal dbv_temp : data_bus_vector := dbv_zeros;
 begin
 	-- synchronization may be required for rd_signals
-----	data_out(output_port_int) <= data_in;
---	n_data:
---	for i in 0 to n-1 generate
+	output_port_int <= to_integer(unsigned(output_port));
+
+	n_data:
+	for i in 0 to n-1 generate
 --		correct_ports:
 --		if i = output_port_int generate
 --			data_out(i) <= data_in;
@@ -41,26 +42,26 @@ begin
 --			data_out(i) <= (others => '0');
 --			data_av_out(i) <= '0';
 --		end generate correct_ports;
-----		data_out(i) <= data_in when i = output_port_int else
-----							(others => '0');
-----		data_av_out(i) <= data_av_in when i = output_port_int else
-----								'0';
---	end generate n_data;
---	data_rd_in <= data_rd_out(output_port_int);
+		data_out(i) <= data_in when i = output_port_int else
+							(others => '0');
+		data_av_out(i) <= data_av_in when i = output_port_int else
+								'0';
+	end generate n_data;
+	data_rd_in <= data_rd_out(output_port_int);
 	
-	process(clk) is 
-		variable output_port_int : integer := 0;
-	begin
-		if rising_edge(clk) then
-			output_port_int := to_integer(unsigned(output_port));
-			report integer'image(output_port_int);
-			data_out <= (others => (others => '0'));
-			data_out(output_port_int) <= data_in;
-			data_av_out <= (others => '0');
-			data_av_out(output_port_int) <= data_av_in;
-			data_rd_in <= data_rd_out(output_port_int);
-		end if;
-	end process;
+--	process(clk) is 
+--		variable output_port_int : integer := 0;
+--	begin
+--		if rising_edge(clk) then
+--			output_port_int := to_integer(unsigned(output_port));
+--			report integer'image(output_port_int);
+--			data_out <= (others => (others => '0'));
+--			data_out(output_port_int) <= data_in;
+--			data_av_out <= (others => '0');
+--			data_av_out(output_port_int) <= data_av_in;
+--			data_rd_in <= data_rd_out(output_port_int);
+--		end if;
+--	end process;
 
 
 --	process(clk) is 
