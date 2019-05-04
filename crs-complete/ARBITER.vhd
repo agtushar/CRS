@@ -11,14 +11,15 @@ entity ARBITER is
     exp_data : in data_bus_vector(n-1 downto 0);
     exp_data_av : in std_logic_vector(n-1 downto 0);
     exp_data_rd : out std_logic_vector(n-1 downto 0);
-    OUT_DATA_AV: INOUT STD_LOGIC;
-    OUT_DATA_RD: IN STD_LOGIC;
-    OUT_DATA: INOUT data_bus;
     GRANT_EXT: out STD_LOGIC_VECTOR(n-1 downto 0);
     buf_req_ext, exp_req_ext: inout std_logic_vector(n-1 downto 0);
     buf_rd_ext, exp_rd_ext : inout std_logic_vector(n-1 downto 0);
     exp_granted : inout std_logic;
-    ack_ext : out std_logic);
+    ack_ext : out std_logic;
+	 OUT_DATA_AV: OUT STD_LOGIC;
+    OUT_DATA_RD: IN STD_LOGIC;
+    OUT_DATA: OUT data_bus
+    );
 end ARBITER;
 
 architecture ARCH_ARBITER of ARBITER is
@@ -53,7 +54,8 @@ architecture ARCH_ARBITER of ARBITER is
   signal buf_empty, buf_req, buf_full, buf_pf, buf_grant, buf_rd,
     p_buf_grant, p_buf_req
     : std_logic_vector(n-1 downto 0);
-  signal exp_rst, buf_rst, ack, p_ack: std_logic := '0';
+  signal exp_rst, buf_rst, ack, p_ack, out_data_temp_av: std_logic := '0';
+  signal out_data_temp : data_bus := (others => '0');
   signal exp_gint, buf_gint, p_exp_gint, p_buf_gint : integer := 0;
   signal grant : std_logic_vector(n-1 downto 0);
   
@@ -91,6 +93,9 @@ begin
 	buf_rd_ext <= buf_rd;
 	exp_rd_ext <= exp_rd;
 	ack_ext <= ack;
+	
+	out_data <= out_data_temp;
+	out_data_av <= out_data_temp_av;
   fifos:
   for i in 0 to n-1 generate
 	set_pk_com_exp: process(clk, rst) is
@@ -254,7 +259,7 @@ begin
 
   -- ACK should be high, only when the current packet contains a '0' dv-bit.
   -- Then, why the below complications?
-	  ack <= is_end_of_packet(out_data) and out_data_av;
+	  ack <= is_end_of_packet(out_data_temp) and out_data_temp_av;
    
   -- 1. Stop reading when the ack is high, since rra's take one cycle to change
   -- the grant.
@@ -268,19 +273,19 @@ begin
                            and not(exp_granted) = '1' else
             zeros;
   
-  out_data <= exp_dout(p_exp_gint) when exp_granted = '1' else
+  out_data_temp <= exp_dout(p_exp_gint) when exp_granted = '1' else
               buf_dout(p_buf_gint);
 
   -- out_data_av is high iff rd_sig in last clock cycle was non-zeros
   process(clk,rst) is
   begin
     if rst = '1' then
-      out_data_av <= '0';
+      out_data_temp_av <= '0';
     elsif rising_edge(clk) then
       if buf_rd = zeros and exp_rd = zeros then
-        out_data_av <= '0';
+        out_data_temp_av <= '0';
       else
-        out_data_av <= '1';
+        out_data_temp_av <= '1';
       end if;
     end if;
   end process;

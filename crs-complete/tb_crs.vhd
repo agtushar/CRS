@@ -53,9 +53,9 @@ ARCHITECTURE behavior OF tb_crs IS
 			BUF_DATA: IN data_bus_vector(n-1 downto 0);
 			OUTPUT_PORT: IN output_port_VECTOR(N-1 downto 0);
 			OUTPUT_PORT_VALID: IN STD_LOGIC_VECTOR(N-1 downto 0);
-			OUTPORT_DATA_AV: inOUT STD_LOGIC_VECTOR(N-1 downto 0);
+			OUTPORT_DATA_AV: OUT STD_LOGIC_VECTOR(N-1 downto 0);
 			OUTPORT_DATA_RD: IN STD_LOGIC_VECTOR(N-1 downto 0);
-			OUTPORT_DATA: inOUT data_bus_vector(n-1 downto 0)
+			OUTPORT_DATA: OUT data_bus_vector(n-1 downto 0)
         );
     END COMPONENT;
     

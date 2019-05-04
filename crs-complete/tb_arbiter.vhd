@@ -50,9 +50,9 @@ ARCHITECTURE behavior OF tb_arbiter IS
 		 exp_data : in data_bus_vector(n-1 downto 0);
 		 exp_data_av : in std_logic_vector(n-1 downto 0);
 		 exp_data_rd : out std_logic_vector(n-1 downto 0);
-		 OUT_DATA_AV: INOUT STD_LOGIC;
+		 OUT_DATA_AV: OUT STD_LOGIC;
 		 OUT_DATA_RD: IN STD_LOGIC;
-		 OUT_DATA: INOUT data_bus;
+		 OUT_DATA: OUT data_bus;
 		 GRANT_EXT: out STD_LOGIC_VECTOR(n-1 downto 0);
 		 buf_req_ext, exp_req_ext, buf_rd_ext, exp_rd_ext: inout std_logic_vector(n-1 downto 0);
 --			rd_sig : inout std_logic_vector(n-1 downto 0);

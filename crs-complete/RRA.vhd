@@ -64,6 +64,7 @@ begin
 				else
 					curr_grant_int := vector_to_integer(grant);
 				end if;
+--				curr_grant_int := vector_to_integer(grant);
 				i := curr_grant_int + 1;
 				-- find the next request, in cyclic order
 				for unused in 0 to n-1 loop

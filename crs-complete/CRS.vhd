@@ -14,9 +14,9 @@ entity CRS is
     BUF_DATA: IN data_bus_vector(n-1 downto 0);
     OUTPUT_PORT: IN output_port_VECTOR(N-1 downto 0);
     OUTPUT_PORT_VALID: IN STD_LOGIC_VECTOR(N-1 downto 0);
-    OUTPORT_DATA_AV: inOUT STD_LOGIC_VECTOR(N-1 downto 0);
+    OUTPORT_DATA_AV: OUT STD_LOGIC_VECTOR(N-1 downto 0);
     OUTPORT_DATA_RD: IN STD_LOGIC_VECTOR(N-1 downto 0);
-    OUTPORT_DATA: inOUT data_bus_vector(n-1 downto 0));
+    OUTPORT_DATA: OUT data_bus_vector(n-1 downto 0));
 end CRS;
 
 architecture ARCH_CRS of CRS is
@@ -43,9 +43,9 @@ architecture ARCH_CRS of CRS is
       exp_data : in data_bus_vector(n-1 downto 0);
       exp_data_av : in std_logic_vector(n-1 downto 0);
       exp_data_rd : out std_logic_vector(n-1 downto 0);
-      OUT_DATA_AV: INOUT STD_LOGIC;
+      OUT_DATA_AV: OUT STD_LOGIC;
       OUT_DATA_RD: IN STD_LOGIC;
-      OUT_DATA: INOUT data_bus;
+      OUT_DATA: OUT data_bus;
       GRANT_EXT: out STD_LOGIC_VECTOR(n-1 downto 0);
       buf_req_ext, exp_req_ext: inout std_logic_vector(n-1 downto 0);
       buf_rd_ext, exp_rd_ext : inout std_logic_vector(n-1 downto 0);
