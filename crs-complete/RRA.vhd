@@ -58,6 +58,7 @@ begin
 		if (rising_edge(clk)) then
 			if (rst = '1') or (ack = '1') then
 				if (rst = '1') then 
+				report "running";
 					grant <= (others => '0'); 
 					grant(n-1) <= '1';
 					curr_grant_int := n-1;
@@ -68,14 +69,15 @@ begin
 				i := curr_grant_int + 1;
 				-- find the next request, in cyclic order
 				for unused in 0 to n-1 loop
-					if (i = curr_grant_int) then exit; end if;
 					if i > n-1 then i := 0; end if;
 					if req(i) = '1' then
 						next_grant_int := i;
 						exit;
 					end if;
+					if (i = curr_grant_int) then exit; end if;
 					i := i + 1;
 				end loop;
+				report integer'image(next_grant_int);
 				grant(curr_grant_int) <= '0';
 				grant(next_grant_int) <= '1';
 				curr_grant_int := next_grant_int;

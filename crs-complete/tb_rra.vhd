@@ -91,6 +91,7 @@ BEGIN
 		wait for clk_period / 2;
       rst <= '1';
       req <= (others => '0');
+		wait for 2*clk_period;
 		req(1) <= '1';
 		wait for clk_period;
 		rst <= '0';
@@ -99,8 +100,13 @@ BEGIN
 		wait for clk_period;
 		ack <= '0';
       req <= (others => '0');
-		req(0) <= '1'; req(1) <= '1';
+--		req(0) <= '1'; 
+		req(1) <= '1';
 		wait for clk_period;
+		rst <= '1';
+		req <= (others => '0');
+		wait for clk_period;
+		rst <= '0';
 		ack <= '1';
 		wait for clk_period;
 		ack <= '0';
