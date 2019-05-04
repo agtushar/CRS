@@ -50,14 +50,15 @@ ARCHITECTURE behavior OF tb_arbiter IS
 		 exp_data : in data_bus_vector(n-1 downto 0);
 		 exp_data_av : in std_logic_vector(n-1 downto 0);
 		 exp_data_rd : out std_logic_vector(n-1 downto 0);
+--		 GRANT_EXT: out STD_LOGIC_VECTOR(n-1 downto 0);
+--		 buf_req_ext, exp_req_ext, buf_rd_ext, exp_rd_ext: inout std_logic_vector(n-1 downto 0);
+----			rd_sig : inout std_logic_vector(n-1 downto 0);
+--		 exp_granted : inout std_logic;
+--		 ack_ext : out std_logic;
 		 OUT_DATA_AV: OUT STD_LOGIC;
 		 OUT_DATA_RD: IN STD_LOGIC;
-		 OUT_DATA: OUT data_bus;
-		 GRANT_EXT: out STD_LOGIC_VECTOR(n-1 downto 0);
-		 buf_req_ext, exp_req_ext, buf_rd_ext, exp_rd_ext: inout std_logic_vector(n-1 downto 0);
---			rd_sig : inout std_logic_vector(n-1 downto 0);
-		 exp_granted : inout std_logic;
-		 ack_ext : out std_logic);
+		 OUT_DATA: OUT data_bus
+		 );
     END COMPONENT;
     
 
@@ -92,15 +93,15 @@ BEGIN
 			 exp_data_rd => exp_data_rd,
 			 OUT_DATA_AV => out_data_av,
 			 OUT_DATA_RD => out_data_rd,
-			 OUT_DATA => out_data,
-			 GRANT_EXT => grant,
-			 exP_req_ext => exp_req,
-			 buf_req_ext => buf_req,
-			 exp_rd_ext => exp_rd,
-			 buf_Rd_ext => buf_rd,
---			 rd_sig => rd_sig,
-			 exp_granted =>  exp_granted,
-			 ack_ext => ack
+			 OUT_DATA => out_data
+--			 GRANT_EXT => grant,
+--			 exP_req_ext => exp_req,
+--			 buf_req_ext => buf_req,
+--			 exp_rd_ext => exp_rd,
+--			 buf_Rd_ext => buf_rd,
+----			 rd_sig => rd_sig,
+--			 exp_granted =>  exp_granted,
+--			 ack_ext => ack
         );
 
    -- Clock process definitions
@@ -140,7 +141,7 @@ BEGIN
 --		wait for clk_period;
 --		buf_data_av <= (others => '0');
 
----- normal test
+-- normal test
 		-- testing that programmable full and the basic system works, and 
       buf_data(0) <= "111110001000";
 		buf_data_av(0) <= '1';		
@@ -170,9 +171,13 @@ BEGIN
 		-- However, output should now be for the exp_data
 		exp_data(3) <= "111111111111";
 		exp_data_av(3) <= '1';
+		exp_data(2) <= "111110001111";
+		exp_data_av(2) <= '1';
 		wait for 4*clk_period;
 		exp_data(3) <= "111111110111";
 		exp_data_av(3) <= '1';
+		exp_data(2) <= "111110000111";
+		exp_data_av(2) <= '1';
 		wait for clk_period;
 		exp_data_av <= (others => '0');
 		
@@ -186,7 +191,7 @@ BEGIN
 		buf_data(1) <= "100001111000";
 		wait for clk_period;
 		buf_data_av <= (others => '0');
-		
+		-- things should work normally
 
 
 --		buf_data(0) <= "100110111000";

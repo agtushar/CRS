@@ -45,12 +45,13 @@ architecture ARCH_CRS of CRS is
       exp_data_rd : out std_logic_vector(n-1 downto 0);
       OUT_DATA_AV: OUT STD_LOGIC;
       OUT_DATA_RD: IN STD_LOGIC;
-      OUT_DATA: OUT data_bus;
-      GRANT_EXT: out STD_LOGIC_VECTOR(n-1 downto 0);
-      buf_req_ext, exp_req_ext: inout std_logic_vector(n-1 downto 0);
-      buf_rd_ext, exp_rd_ext : inout std_logic_vector(n-1 downto 0);
-      exp_granted : inout std_logic;
-      ack_ext : out std_logic);
+      OUT_DATA: OUT data_bus
+--      GRANT_EXT: out STD_LOGIC_VECTOR(n-1 downto 0);
+--      buf_req_ext, exp_req_ext: inout std_logic_vector(n-1 downto 0);
+--      buf_rd_ext, exp_rd_ext : inout std_logic_vector(n-1 downto 0);
+--      exp_granted : inout std_logic;
+--      ack_ext : out std_logic
+		);
   end component;
 
   type slv_vector is array(n-1 downto 0) of std_logic_vector(n-1 downto 0);
@@ -136,6 +137,39 @@ begin
         );
     end generate;
 
+--			buf_voq : voq port map(
+--				clk => clk,
+--			  data_av_in => buf_data_av(0),
+--			  data_rd_in => buf_data_rd(0),
+--			  data_in => buf_data(0),
+--			  output_port_valid => output_port_valid(0),
+--			  output_port => output_port(0),
+--			  data_out => outport_data,
+--			  data_av_out => outport_data_av,
+--			  data_rd_out => outport_data_rd
+--        );
+
+
+		-- indicates there's no difficulty with arbiter
+--		arbiter_X: arbiter port map(
+--        clk => clk,
+--        rst => rst,
+----        buf_data => buf_data_out(n-1 downto 0)(i),
+--		  buf_data => buf_data,
+--        buf_data_av => buf_data_av,
+--        buf_data_rd => buf_data_rd,
+--        exp_data => exp_data,
+--        exp_data_av => exp_data_av,
+--        exp_data_rd => exp_data_rd,
+--        OUT_DATA_AV => outport_data_av(1),
+--        OUT_DATA_RD => outport_data_rd(1),
+--        OUT_DATA => outport_data(1)
+--        -- GRANT_EXT: out STD_LOGIC_VECTOR(n-1 downto 0);
+--        -- buf_req_ext, exp_req_ext: inout std_logic_vector(n-1 downto 0);
+--        -- buf_rd_ext, exp_rd_ext : inout std_logic_vector(n-1 downto 0);
+--        -- exp_granted : inout std_logic;
+--        -- ack_ext : out std_logic
+--        );
 
 
 end ARCH_CRS;

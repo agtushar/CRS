@@ -11,11 +11,11 @@ entity ARBITER is
     exp_data : in data_bus_vector(n-1 downto 0);
     exp_data_av : in std_logic_vector(n-1 downto 0);
     exp_data_rd : out std_logic_vector(n-1 downto 0);
-    GRANT_EXT: out STD_LOGIC_VECTOR(n-1 downto 0);
-    buf_req_ext, exp_req_ext: inout std_logic_vector(n-1 downto 0);
-    buf_rd_ext, exp_rd_ext : inout std_logic_vector(n-1 downto 0);
-    exp_granted : inout std_logic;
-    ack_ext : out std_logic;
+--    GRANT_EXT: out STD_LOGIC_VECTOR(n-1 downto 0);
+--    buf_req_ext, exp_req_ext: inout std_logic_vector(n-1 downto 0);
+--    buf_rd_ext, exp_rd_ext : inout std_logic_vector(n-1 downto 0);
+--    exp_granted : inout std_logic;
+--    ack_ext : out std_logic;
     OUT_DATA_AV: OUT STD_LOGIC;
     OUT_DATA_RD: IN STD_LOGIC;
     OUT_DATA: OUT data_bus
@@ -23,6 +23,11 @@ entity ARBITER is
 end ARBITER;
 
 architecture ARCH_ARBITER of ARBITER is
+
+	-- comment while debugging 
+	signal grant_ext, buf_req_ext, exp_req_ext, buf_rd_ext, exp_rd_ext 
+		: std_logic_vector(n-1 downto 0);
+	signal exp_granted, ack_ext : std_logic;
   
   COMPONENT fifo
     PORT (
@@ -131,7 +136,7 @@ begin
     fifo_exp: fifo port map(
       rst => '0',
       clk => clk,
-      din => exp_data(i),
+      din => p_exp_data(i),
       wr_en => wr_en_exp(i), -- writing is straight-forward
       rd_en => exp_rd(i), -- reading is not so;
       -- may be, it can be when rra has no delay
@@ -177,7 +182,7 @@ begin
     fifo_buf: fifo port map(
       rst => '0',
       clk => clk,
-      din => buf_data(i),
+      din => p_buf_data(i),
       wr_en => wr_en_buf(i), -- writing is straight-forward
       rd_en => buf_rd(i), -- reading is not so;
       -- may be, it can be when rra has no delay
