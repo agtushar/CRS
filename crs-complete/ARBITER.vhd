@@ -59,7 +59,8 @@ architecture ARCH_ARBITER of ARBITER is
   signal buf_empty, buf_req, buf_full, buf_pf, buf_grant, buf_rd,
     p_buf_grant, p_buf_req, pp_buf_req
     : std_logic_vector(n-1 downto 0);
-  signal exp_rst, buf_rst, ack, p_ack, out_data_temp_av, exp_ack, buf_ack: std_logic := '0';
+  signal exp_rst, buf_rst, ack, p_ack, out_data_temp_av, exp_ack, buf_ack,
+	data_outstanding, p_data_outstanding: std_logic := '0';
   signal out_data_temp : data_bus := (others => '0');
   signal exp_gint, buf_gint, p_exp_gint, p_buf_gint : integer := 0;
   signal grant : std_logic_vector(n-1 downto 0);
@@ -278,14 +279,32 @@ begin
   -- >> because grants correspond to the request of the previous cycles
   
   exp_rd <= exp_grant when ack = '0' and not (p_exp_req = zeros)
-            and exp_granted = '1' else
+            and exp_granted = '1' and data_outstanding = '0' else
             zeros;
   buf_rd <= buf_grant when ack = '0' and not (p_buf_req = zeros)
-            and not(exp_granted) = '1' else
+            and not(exp_granted) = '1' and data_outstanding = '0' else
             zeros;
   
   out_data_temp <= exp_dout(p_exp_gint) when exp_granted = '1' else
                    buf_dout(p_buf_gint);
+						
+--	data_outstanding <= '1' when ((not (exp_rd=zeros)) or (not (buf_rd=zeros))) 
+--									and out_data_rd = '0'
+	process(clk,rst) is
+  begin
+    if rst = '1' then
+      data_outstanding <= '0';
+    elsif rising_edge(clk) then
+      if ((not (exp_rd=zeros)) or (not (buf_rd=zeros))) and out_data_rd = '0' then
+        data_outstanding <= '1';
+		  report "data outstanding";
+      elsif exp_rd = zeros and buf_rd=zeros and out_data_rd='1' then
+        data_outstanding <= '0';
+		else
+			data_outstanding <= data_outstanding;
+      end if;
+    end if;
+  end process;
 
   -- out_data_av is high iff rd_sig in last clock cycle was non-zeros
   process(clk,rst) is
@@ -293,7 +312,7 @@ begin
     if rst = '1' then
       out_data_temp_av <= '0';
     elsif rising_edge(clk) then
-      if buf_rd = zeros and exp_rd = zeros then
+      if (buf_rd = zeros and exp_rd = zeros) and data_outstanding = '0' then
         out_data_temp_av <= '0';
       else
         out_data_temp_av <= '1';
@@ -318,6 +337,7 @@ begin
       p_buf_grant <= buf_grant;
       p_exp_gint <= exp_gint;
       p_buf_gint <= buf_gint;
+		p_data_outstanding <= data_outstanding;
     end if;
   end process;
 end ARCH_ARBITER;

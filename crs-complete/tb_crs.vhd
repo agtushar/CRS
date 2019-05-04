@@ -115,6 +115,10 @@ BEGIN
 		buf_data_av(1) <= '1';		
 		buf_data(2) <= "101010001011";
 		buf_data_av(2) <= '1';
+		outport_data_rd(0) <= '1';
+		outport_data_rd(1) <= '1';
+		outport_data_rd(2) <= '1';
+		outport_data_rd(3) <= '1';
 		output_port(0) <= "00000001";
 		output_port_valid(0) <= '1';
 		output_port(1) <= "00000001";
@@ -125,7 +129,10 @@ BEGIN
 		output_port_valid(3) <= '1';
 		-- We have a fifo of size 16, with threshold of 5;
 		-- this, therefore, assumes a maximum packet length of 11 data chunks.
-		wait for 7 * clk_period;
+		wait for 4 * clk_period;
+		outport_data_rd(1) <= '0';
+		wait for 2 * clk_period;
+		outport_data_rd(1) <= '1';
 		buf_data(0) <= "111110000000";
 		buf_data(1) <= "100011110000";
 		buf_data(2) <= "101010000011";
