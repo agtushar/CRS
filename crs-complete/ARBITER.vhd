@@ -46,7 +46,7 @@ architecture ARCH_ARBITER of ARBITER is
       GRANT: INOUT STD_LOGIC_VECTOR(N-1 DOWNTO 0));
   end component;
   
-  signal exp_dout, buf_dout : data_bus_vector(n-1 downto 0);
+  signal p_buf_data, p_exp_data, exp_dout, buf_dout : data_bus_vector(n-1 downto 0);
   signal exp_empty, exp_req, exp_full, exp_pf, exp_grant, exp_rd,
     p_exp_grant, p_exp_req
     : std_logic_vector(n-1 downto 0);
@@ -59,7 +59,7 @@ architecture ARCH_ARBITER of ARBITER is
   
   constant zeros : std_logic_vector(n-1 downto 0) := (others => '0');
   
-  signal wr_en_exp, wr_en_buf : std_logic_vector(n-1 downto 0) := (others => '0');
+  signal pk_com_exp, pk_com_buf, wr_en_exp, wr_en_buf : std_logic_vector(n-1 downto 0) := (others => '0');
   
   function is_end_of_packet (db: data_bus) return std_logic is
 		variable i : integer := dv_bit_interval-1;
@@ -93,7 +93,36 @@ begin
 	ack_ext <= ack;
   fifos:
   for i in 0 to n-1 generate
-		wr_en_exp(i) <= exp_data_av(i) when exp_pf(i) = '0' and exp_granted = '1' else '0';
+	set_pk_com_exp: process(clk, rst) is
+	begin
+		if rst = '1' then
+			pk_com_exp(i) <= '0';
+			p_exp_data(i) <= (others => '0');
+		elsif rising_edge(clk) then
+			if exp_data_av(i) = '1' then
+				if exp_pf(i) = '0' then
+					wr_en_exp(i) <= '1';
+					pk_com_exp(i) <= '0';
+				else
+					if pk_com_exp(i) = '0' then
+						wr_en_exp(i) <= '1';
+						if is_end_of_packet(exp_data(i)) = '1' then
+							pk_com_exp(i) <= '1';
+						end if;
+					else 
+						wr_en_exp(i) <= '0';
+					end if;
+					
+				end if;
+			else
+				wr_en_exp(i) <= '0';
+			end if;
+			p_exp_data(i) <= exp_data(i);
+		end if;
+	end process;  
+--		wr_en_exp(i) <= exp_data_av(i) when exp_pf(i) = '0' and exp_granted = '1' 
+--														and pk_com_exp(i) = '0'
+--							 else '0';
     fifo_exp: fifo port map(
       rst => '0',
       clk => clk,
@@ -108,7 +137,38 @@ begin
       );
 		exp_data_rd(i) <= wr_en_exp(i);
 		
-		wr_en_buf(i) <= buf_data_av(i) when buf_pf(i) = '0' and exp_granted = '0' else '0';
+	set_pk_com_buf: process(clk, rst) is
+	begin
+		if rst = '1' then
+			pk_com_buf(i) <= '0';
+			p_buf_data(i) <= (others => '0');
+		elsif rising_edge(clk) then
+			if buf_data_av(i) = '1' then
+				if buf_pf(i) = '0' then
+					wr_en_buf(i) <= '1';
+					pk_com_buf(i) <= '0';
+				else
+					if pk_com_buf(i) = '0' then
+						wr_en_buf(i) <= '1';
+						if is_end_of_packet(buf_data(i)) = '1' then
+							pk_com_buf(i) <= '1';
+						end if;
+					else 
+						wr_en_buf(i) <= '0';
+					end if;
+					
+				end if;
+			else
+				wr_en_buf(i) <= '0';
+			end if;
+			p_buf_data(i) <= buf_data(i);
+		end if;
+	end process;	
+		
+		
+--		wr_en_buf(i) <= buf_data_av(i) when (buf_pf(i) = '0' and pk_com_buf(i) = '0') 
+--														 and exp_granted = '0'
+--							 else '0';
     fifo_buf: fifo port map(
       rst => '0',
       clk => clk,
@@ -149,7 +209,22 @@ begin
 	exp_gint <= vector_to_integer(exp_grant);
 	buf_gint <= vector_to_integer(buf_grant);
       
-  exp_granted <= '1' when not (exp_req = zeros) else '0';
+  process(clk,rst) is
+  begin
+    if rst='1' then
+		exp_granted <= '0';
+    elsif rising_edge(clk) then
+      if ack = '1' then
+			if not(exp_req = zeros) then 
+				exp_granted <= '1';
+			else
+				exp_granted <= '0';
+			end if;
+		end if;
+    end if;
+  end process;
+		
+--  exp_granted <= '1' when not (exp_req = zeros) else '0';
   grant <= exp_grant when exp_granted = '1' else buf_grant;
   
   grant_ext <= grant;

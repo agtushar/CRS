@@ -18,7 +18,7 @@ package globals is
 --
 -- constant <constant_name>		: time := <time_unit> ns;
 -- constant <constant_name>		: integer := <value;
-	constant N : integer := 2; -- N in the statement.pdf
+	constant N : integer := 4; -- N in the statement.pdf
 	constant dv_bit_interval :integer := 4; -- 4th, 8th and 12th bits are data_valid_bits
 	constant n_dv_bits :integer := 3; -- number of data_valid bits per data chunk
 	constant data_bus_size : integer := dv_bit_interval * n_dv_bits;

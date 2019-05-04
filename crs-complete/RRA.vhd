@@ -57,7 +57,13 @@ begin
 	begin
 		if (rising_edge(clk)) then
 			if (rst = '1') or (ack = '1') then
-				curr_grant_int := vector_to_integer(grant);
+				if (rst = '1') then 
+					grant <= (others => '0'); 
+					grant(n-1) <= '1';
+					curr_grant_int := n-1;
+				else
+					curr_grant_int := vector_to_integer(grant);
+				end if;
 				i := curr_grant_int + 1;
 				-- find the next request, in cyclic order
 				for unused in 0 to n-1 loop

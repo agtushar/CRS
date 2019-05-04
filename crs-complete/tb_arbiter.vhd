@@ -122,14 +122,14 @@ BEGIN
 		rst <= '0';			
 		
 -- test for fifo almost full
-			buf_data(0) <= "111110001000";
-			buf_data(1) <= "101010001011";
-			buf_data_av <= "11";
-			wait for 49 * clk_period;
-			buf_data(0) <= "111110000000";
-			buf_data(1) <= "101010000011";
-			wait for clk_period;
-			buf_data_av <= "00";
+--			buf_data(0) <= "111110001000";
+--			buf_data(1) <= "101010001011";
+--			buf_data_av <= "11";
+--			wait for 49 * clk_period;
+--			buf_data(0) <= "111110000000";
+--			buf_data(1) <= "101010000011";
+--			wait for clk_period;
+--			buf_data_av <= "00";
 
 -- crs test
 --		rst <= '0';			
@@ -141,6 +141,54 @@ BEGIN
 --		buf_data_av <= (others => '0');
 
 ---- normal test
+		-- testing that programmable full and the basic system works, and 
+      buf_data(0) <= "111110001000";
+		buf_data_av(0) <= '1';		
+		buf_data(1) <= "100011111000";
+		buf_data_av(1) <= '1';		
+		buf_data(2) <= "101010001011";
+		buf_data_av(2) <= '1';
+		-- We have a fifo of size 16, with threshold of 5;
+		-- this, therefore, assumes a maximum packet length of 11 data chunks.
+		wait for 7 * clk_period;
+		buf_data(0) <= "111110000000";
+		buf_data(1) <= "100011110000";
+		buf_data(2) <= "101010000011";
+		wait for clk_period;
+		-- This forms a packet length of 8 data chunks each.
+		buf_data(0) <= "101010001011";
+		buf_data(1) <= "101010001111";
+		buf_data(2) <= "111110001000";
+		wait for 3*clk_period;
+		buf_data(0) <= "101000001011";
+		buf_data(1) <= "101000001111";
+		buf_data(2) <= "111100001000";
+		wait for clk_period;
+		-- Expectation: buf_data_rd(1,2) should be low for the last 4 clk_periods.
+		buf_data_av <= (others => '0');
+		
+		-- However, output should now be for the exp_data
+		exp_data(3) <= "111111111111";
+		exp_data_av(3) <= '1';
+		wait for 4*clk_period;
+		exp_data(3) <= "111111110111";
+		exp_data_av(3) <= '1';
+		wait for clk_period;
+		exp_data_av <= (others => '0');
+		
+		wait for 30 * clk_period; -- let the buffers empty
+		buf_data(0) <= "100010001000";
+		buf_data_av(0) <= '1';
+		buf_data(1) <= "100011111000";
+		buf_data_av(1) <= '1';
+		wait for clk_period;
+		buf_data(0) <= "100000001000";
+		buf_data(1) <= "100001111000";
+		wait for clk_period;
+		buf_data_av <= (others => '0');
+		
+
+
 --		buf_data(0) <= "100110111000";
 --		buf_data(1) <= "100010001011";
 --		buf_data_av(0) <= '1';

@@ -105,18 +105,33 @@ BEGIN
    begin		
 		rst <= '1'; -- note rst for fifo is '0': see ARBITER.vhd;
 		wait for 2.5*clk_period; -- wait for fifo initialization
-		rst <= '0';			
+		rst <= '0';
+
+		-- testing that programmable full and the basic system works, and 
       buf_data(0) <= "111110001000";
-		buf_data(1) <= "101010001011";
-		buf_data_av <= "11";
+		buf_data_av(0) <= '1';		
+		buf_data(2) <= "101010001011";
+		buf_data_av(2) <= '1';
 		output_port(0) <= "00000001";
-		output_port(1) <= "00000001";
-		output_port_valid <= "11";
-		wait for 49 * clk_period;
+		output_port_valid(0) <= '1';
+		output_port(2) <= "00000001";
+		output_port_valid(2) <= '1';
+		-- We have a fifo of size 16, with threshold of 5;
+		-- this, therefore, assumes a maximum packet length of 11 data chunks.
+		wait for 7 * clk_period;
 		buf_data(0) <= "111110000000";
-		buf_data(1) <= "101010000011";
+		buf_data(2) <= "101010000011";
 		wait for clk_period;
-		buf_data_av <= "00";
+		-- This forms a packet length of 8 data chunks each.
+		buf_data(0) <= "101010000011";
+		buf_data(2) <= "111110000000";
+		wait for 3*clk_period;
+		buf_data(0) <= "101000000011";
+		buf_data(2) <= "111100000000";
+		wait for clk_period;
+		-- Expectation: buf_data_rd(0) should be low for the last 4 clk_periods.
+		--outport_data_rd <= "00";
+		buf_data_av <= (others => '0');
 		output_port_valid <= (others => '0');
 
 		
