@@ -1,0 +1,15 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity BUFFER is
+	PORT( 	DATA_RD: OUT STD_LOGIC;
+		DATA_AV: IN STD_LOGIC;
+		DATA: IN STD_LOGIC_VECTOR(144 DOWNTO 0);
+		PK_AV: OUT STD_LOGIC;
+		CHUNK_RD: IN STD_LOGIC;
+		CHUNK: OUT STD_LOGIC_VECTOR(144 DOWNTO 0));
+end BUFFER;
+
+architecture ARCH_BUFFER of BUFFER is
+begin
+end ARCH_BUFFER;

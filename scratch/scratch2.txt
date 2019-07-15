@@ -1,0 +1,3 @@
+- what is the sense of virtual in VOQ?
+- what are the states?
+
